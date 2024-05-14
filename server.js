@@ -44,9 +44,25 @@ res.json(notes)
 
 });
 
+app.delete("/api/notes/:id", function(req, res) {
+    // Find the note with the matching id
+    const noteId = parseInt(req.params.id);
+    const noteIndex = notes.findIndex(note => note.id === noteId);
 
+    // If the note was found, remove it from the array
+    if (noteIndex !== -1) {
+        notes.splice(noteIndex, 1);
 
-//app.delete();
+        // Update db.json to match the latest notes array
+        fs.writeFileSync("./db.json", JSON.stringify(notes));
+
+        console.log("Deleted note with id " + noteId);
+        res.json(notes);
+    } else {
+        // If the note wasn't found, send a 404 response
+        res.status(404).send('Note not found');
+    }
+});
 
 //base url http://localhost:3001/
 app.listen(PORT, ()=> console.log(`http://localhost:${PORT}`));
